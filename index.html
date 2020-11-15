@@ -60,6 +60,8 @@
         });
 
         console.log(event.target.suggestion.value)
+        
+        document.getElementById("suggestion").value = '';
 
         return false;
       }
@@ -71,6 +73,8 @@
           username: event.target.username.value,
           message: event.target.message.value
         });
+        
+        document.getElementById("message").value = '';
 
         return false;
       }
