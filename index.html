@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Socket boilerplate</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="p-16">
+    <section class="py-4">        
+      <h2 class="text-lg font-bold">Suggestions</h2>
+      <ul class="py-2" id="suggestions" class="block"></ul>
+      <form method="POST" onsubmit="return handleSubmitSuggestion(event)">
+        <input
+          class="border p-2"
+          type="text"
+          id="suggestion"
+          placeholder="Write message"
+          autocomplete="off"
+        />
+        <button class="py-2 px-4 bg-blue-800 text-white" type="submit">
+          Send
+        </button>
+      </form>
+    </section>
+  
+    <section class="py-4">  
+      <h2 class="text-lg font-bold">Chat</h2>
+      <ul class="py-2" id="messages" class="block"></ul>
+      <form method="POST" onsubmit="return handleSubmitMessage(event)">
+        <input
+          class="border p-2"
+          type="text"
+          id="username"
+          placeholder="Username"
+        />
+        <input
+          class="border p-2"
+          type="text"
+          id="message"
+          placeholder="Write message"
+          autocomplete="off"
+        />
+        <button class="py-2 px-4 bg-blue-800 text-white" type="submit">
+          Send
+        </button>
+      </form>
+    </section>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      function handleSubmitSuggestion(event) {
+        event.preventDefault();
+
+        socket.emit("suggestion", {
+          suggestion: event.target.suggestion.value
+        });
+
+        console.log(event.target.suggestion.value)
+
+        return false;
+      }
+
+      function handleSubmitMessage(event) {
+        event.preventDefault();
+
+        socket.emit("chat message", {
+          username: event.target.username.value,
+          message: event.target.message.value
+        });
+
+        return false;
+      }
+
+      function refreshSuggestions(suggestions) {
+        console.log("suggestions", suggestions);
+
+        document.getElementById("suggestions").innerHTML = '';
+
+        suggestions.forEach((suggestion, i) => {
+          const li = document.createElement("li");
+          const button = document.createElement("button");
+          button.innerHTML = `${suggestion.suggestion} (${suggestion.score})`;
+          button.onclick = function(event) {
+            console.log('vote for suggestion', {
+              suggestion
+            });
+            socket.emit("vote for suggestion", {
+              existingSuggestion: suggestion.suggestion
+            });
+          }
+          li.appendChild(button);
+          document.getElementById("suggestions").appendChild(li);
+        });
+
+      };
+      
+      socket.on('connect', () => {
+        socket.emit("get suggestions", socket.id);
+      });
+      
+
+      socket.on("refresh suggestions", refreshSuggestions);
+
+      socket.on("chat message", function(message) {
+        console.log("chat message", message);
+        const li = document.createElement("li");
+        li.innerHTML = message;
+        document.getElementById("messages").appendChild(li);
+      });
+    </script>
+  </body>
+</html>
