@@ -40,5 +40,6 @@ io.on("connection", socket => {
   });
 
   suggestionEvents({ socket, io, suggestions });
+  console.log("what is gravity?", physics.gravity);
   gravityEvents({ socket, io, physics });
 });
