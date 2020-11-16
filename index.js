@@ -3,11 +3,13 @@ var http = require("http").createServer(app);
 var io = require("socket.io")(http);
 const suggestionEvents = require("./suggestions.js");
 const gravityEvents = require("./gravity.js");
+const characterEvents = require("./character.js");
 
 let numberOfUsers = 0;
 // const suggestions = [{ suggestion: "Make quiz", score: 2 }];
 const suggestions = [];
 const physics = { gravity: false };
+const character = { x: 0, y: 0 };
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -40,6 +42,6 @@ io.on("connection", socket => {
   });
 
   suggestionEvents({ socket, io, suggestions });
-  console.log("what is gravity?", physics.gravity);
   gravityEvents({ socket, io, physics });
+  characterEvents({ socket, io, character });
 });
