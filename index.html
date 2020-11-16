@@ -9,7 +9,7 @@
     />
   </head>
   <body class="p-16">
-    <section class="py-4">        
+    <section class="py-4">
       <h2 class="text-lg font-bold">Suggestions</h2>
       <ul class="py-2" id="suggestions" class="block"></ul>
       <form method="POST" onsubmit="return handleSubmitSuggestion(event)">
@@ -25,8 +25,8 @@
         </button>
       </form>
     </section>
-  
-    <section class="py-4">  
+
+    <section class="py-4">
       <h2 class="text-lg font-bold">Chat</h2>
       <ul class="py-2" id="messages" class="block"></ul>
       <form method="POST" onsubmit="return handleSubmitMessage(event)">
@@ -59,9 +59,9 @@
           suggestion: event.target.suggestion.value
         });
 
-        console.log(event.target.suggestion.value)
-        
-        document.getElementById("suggestion").value = '';
+        console.log(event.target.suggestion.value);
+
+        document.getElementById("suggestion").value = "";
 
         return false;
       }
@@ -73,8 +73,8 @@
           username: event.target.username.value,
           message: event.target.message.value
         });
-        
-        document.getElementById("message").value = '';
+
+        document.getElementById("message").value = "";
 
         return false;
       }
@@ -82,30 +82,28 @@
       function refreshSuggestions(suggestions) {
         console.log("suggestions", suggestions);
 
-        document.getElementById("suggestions").innerHTML = '';
+        document.getElementById("suggestions").innerHTML = "";
 
         suggestions.forEach((suggestion, i) => {
           const li = document.createElement("li");
           const button = document.createElement("button");
           button.innerHTML = `${suggestion.suggestion} (${suggestion.score})`;
           button.onclick = function(event) {
-            console.log('vote for suggestion', {
+            console.log("vote for suggestion", {
               suggestion
             });
             socket.emit("vote for suggestion", {
               existingSuggestion: suggestion.suggestion
             });
-          }
+          };
           li.appendChild(button);
           document.getElementById("suggestions").appendChild(li);
         });
+      }
 
-      };
-      
-      socket.on('connect', () => {
+      socket.on("connect", () => {
         socket.emit("get suggestions", socket.id);
       });
-      
 
       socket.on("refresh suggestions", refreshSuggestions);
 
