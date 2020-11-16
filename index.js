@@ -14,6 +14,10 @@ const character = { x: 0, y: 0 };
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
+app.get("/version/:version", (req, res) => {
+  const version = req.params.version;
+  res.sendFile(__dirname + "/versions/index" + req.params.version + ".html");
+});
 
 http.listen(process.env.PORT || 3000, () => {
   console.log("listening on *:" + process.env.PORT || 3000);
