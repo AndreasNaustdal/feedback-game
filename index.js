@@ -24,6 +24,9 @@ io.on("connection", socket => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
+    if (numberOfUsers <== 1) {
+      console.log("Current suggestions:", JSON.stringify(suggestions));
+    }
     io.emit("chat message", "a user disconnected");
     numberOfUsers--;
   });
