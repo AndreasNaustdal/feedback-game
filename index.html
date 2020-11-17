@@ -125,9 +125,11 @@
         ┏ʕ •ᴥ•ʔ┛
       </div>
     </section>
-    
+
     <section class="py-4">
-      <h2 class="text-lg font-bold underline"><a href="/version/1-0">Go to older version</a></h2>
+      <h2 class="text-lg font-bold underline">
+        <a href="/version/1-0">Go to older version</a>
+      </h2>
     </section>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -178,6 +180,10 @@
 
       function refreshSuggestions(suggestions) {
         console.log("suggestions", suggestions);
+
+        if (!suggestions) {
+          return;
+        }
 
         document.getElementById("suggestions").innerHTML = "";
 
