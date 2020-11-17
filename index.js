@@ -5,9 +5,14 @@ var io = require("socket.io")(http);
 const { Client } = require("pg");
 
 function createConnection() {
+  console.log("isProdDB:", isProdDB(process.env.DATABASE_URL));
   return new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: isProdDB(process.env.DATABASE_URL)
+      ? {
+          rejectUnauthorized: false
+        }
+      : false
   });
 }
 
