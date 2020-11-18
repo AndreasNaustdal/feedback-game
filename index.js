@@ -3,6 +3,7 @@ var app = require("express")();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
 const { Client } = require("pg");
+const schedule = require("node-schedule");
 
 function createConnection() {
   console.log("isProdDB:", isProdDB(process.env.DATABASE_URL));
@@ -59,6 +60,14 @@ async function saveSuggestions({ suggestions = [] }) {
     await client.end();
   }
 }
+
+// Save suggestions every 10th minute
+const saveSuggestionsSchedule = schedule.scheduleJob(
+  "*/10 * * * *",
+  function() {
+    saveSuggestions({ suggestions });
+  }
+);
 
 async function loadSuggestions({ items }) {
   const client = createConnection();
