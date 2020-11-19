@@ -129,7 +129,9 @@ const midiQuiz = {
     6: ["Look at yourself"],
     7: ["The park"],
     8: ["The wizard"],
-    9: ["Wonderworld"]
+    9: ["Wonderworld"],
+    10: ["Circle of hands"],
+    11: ["Sympathy"]
   }
 };
 
