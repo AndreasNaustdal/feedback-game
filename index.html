@@ -130,8 +130,14 @@
 
     <section class="py-4">
       <h2 class="text-lg font-bold">Uriah Heep MIDI Kviss</h2>
-      <div class="py-2">
-        <input type="checkbox" id="midiQuiz" name="midiQuiz" />
+      <div class="py-2 flex">
+        <input
+          type="checkbox"
+          id="midiQuiz"
+          name="midiQuiz"
+          class="h-6 w-6 mr-2 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"
+          onchange="handleMidiQuizSpeaker()"
+        />
         <label for="midiQuiz">Turn music on/off</label>
       </div>
       <form class="py-2" action="" onsubmit="handleSubmitSongGuess(event)">
@@ -295,13 +301,30 @@
         }
       }
 
-      function setSong(songPlaying) {
-        const midiOn = document.getElementById("midiQuiz").value;
+      function handleMidiQuizSpeaker() {
+        const midiOn = document.getElementById("midiQuiz").checked;
 
-        document.getElementById("midiQuiz").onclick = () =>
+        if (!midiOn) {
+          MIDIjs.stop();
+        }
+      }
+
+      function setSong(songPlaying) {
+        // Change song checkbox will start
+        document.getElementById("midiQuiz").onclick = () => {
+          const midiOn = document.getElementById("midiQuiz").checked;
+
+          if (!midiOn) {
+            return;
+          }
           MIDIjs.play("/midi/" + songPlaying + ".mid");
+        };
+
+        // Change song in the middle of the song
+        const midiOn = document.getElementById("midiQuiz").checked;
 
         if (midiOn) {
+          console.log("Midi play!");
           MIDIjs.play("/midi/" + songPlaying + ".mid");
         }
       }
