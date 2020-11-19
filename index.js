@@ -131,7 +131,19 @@ const midiQuiz = {
     8: ["The wizard"],
     9: ["Wonderworld"],
     10: ["Circle of hands"],
-    11: ["Sympathy"]
+    11: ["Sympathy"],
+    12: ["The easy road"],
+    13: ["Sunrise"],
+    14: ["A year or a day"],
+    15: ["Echoes in the dark"],
+    16: ["Bird of prey"],
+    17: ["Illusion"],
+    18: [
+      "The magicians birthday",
+      "Magicians birthday",
+      "The magician's birthday",
+      "Magician's birthday"
+    ]
   }
 };
 
