@@ -1,5 +1,6 @@
 require("dotenv").config();
-var app = require("express")();
+var express = require("express");
+var app = express();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
 const { Client } = require("pg");
@@ -108,12 +109,29 @@ async function loadSuggestions({ items }) {
 const suggestionEvents = require("./suggestions.js");
 const gravityEvents = require("./gravity.js");
 const characterEvents = require("./character.js");
+const midiQuizEvents = require("./midiQuiz.js");
 
 let numberOfUsers = 0;
 // const suggestions = [{ suggestion: "Make quiz", score: 2 }];
 const suggestions = [];
 const physics = { gravity: false };
 const character = { x: 0, y: 0 };
+const midiQuiz = {
+  songPlaying: 1,
+  scoreboard: {},
+  songs: {
+    0: ["Easy livin", "Easy living", "Easy livin'"],
+    1: ["Return to Fantasy"],
+    2: ["Firefly"],
+    3: ["Free me"],
+    4: ["July morning"],
+    5: ["Lady in black"],
+    6: ["Look at yourself"],
+    7: ["The park"],
+    8: ["The wizard"],
+    9: ["Wonderworld"]
+  }
+};
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -122,6 +140,7 @@ app.get("/version/:version", (req, res) => {
   const version = req.params.version;
   res.sendFile(__dirname + "/versions/index" + req.params.version + ".html");
 });
+app.use(express.static("public"));
 
 http.listen(process.env.PORT || 3000, () => {
   console.log("listening on *:" + process.env.PORT || 3000);
@@ -172,4 +191,5 @@ io.on("connection", socket => {
   suggestionEvents({ socket, io, suggestions });
   gravityEvents({ socket, io, physics });
   characterEvents({ socket, io, character });
+  midiQuizEvents({ socket, io, midiQuiz });
 });

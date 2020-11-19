@@ -36,6 +36,7 @@
         }
       }
     </style>
+    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
   </head>
   <body class="p-16">
     <section class="py-4">
@@ -128,6 +129,31 @@
     </section>
 
     <section class="py-4">
+      <h2 class="text-lg font-bold">Uriah Heep MIDI Kviss</h2>
+      <div class="py-2">
+        <input type="checkbox" id="midiQuiz" name="midiQuiz" />
+        <label for="midiQuiz">Turn music on/off</label>
+      </div>
+      <form class="py-2" action="" onsubmit="handleSubmitSongGuess(event)">
+        <input
+          type="text"
+          id="songGuessed"
+          class="border p-2"
+          placeholder="Name the song"
+          autocomplete="off"
+        />
+        <button type="submit" class="py-2 px-4 bg-blue-800 text-white">
+          Guess
+        </button>
+      </form>
+      <p
+        class="text-2xl text-green-800 font-bold animate-bounce"
+        id="midiQuizMessage"
+      ></p>
+      <ol class="py-2 list-decimal" id="midiQuizScoreboard" class="block"></ol>
+    </section>
+
+    <section class="py-4">
       <h2 class="text-lg font-bold underline">
         <a href="/version/1-0">Go to older version</a>
       </h2>
@@ -178,6 +204,20 @@
       function handleCharacterDown() {
         socket.emit("character move down");
       }
+      function handleSubmitSongGuess() {
+        event.preventDefault();
+
+        document.getElementById("midiQuizMessage").innerHTML = "";
+
+        const username = document.getElementById("username").value;
+        socket.emit("midiQuiz guess song", {
+          songGuessed: document.getElementById("songGuessed").value,
+          username,
+          socketId: socket.id
+        });
+
+        document.getElementById("songGuessed").value = "";
+      }
 
       function refreshSuggestions(suggestions) {
         console.log("suggestions", suggestions);
@@ -210,6 +250,7 @@
         socket.emit("get gravity", socket.id);
         socket.emit("get character x", socket.id);
         socket.emit("get character y", socket.id);
+        socket.emit("get current song", socket.id);
       });
 
       socket.on("refresh suggestions", refreshSuggestions);
@@ -253,6 +294,49 @@
           handleCharacterDown();
         }
       }
+
+      function setSong(songPlaying) {
+        const midiOn = document.getElementById("midiQuiz").value;
+
+        document.getElementById("midiQuiz").onclick = () =>
+          MIDIjs.play("/midi/" + songPlaying + ".mid");
+
+        if (midiOn) {
+          MIDIjs.play("/midi/" + songPlaying + ".mid");
+        }
+      }
+
+      socket.on("midiQuiz current song", setSong);
+
+      function correctSong() {
+        document.getElementById("midiQuizMessage").innerHTML =
+          "Correct answer!";
+      }
+
+      socket.on("midiQuiz correct song", correctSong);
+
+      function refreshMidiQuizScoreboard(scoreboard) {
+        document.getElementById("midiQuizScoreboard").innerHTML = "";
+
+        const scoreArray = [];
+
+        Object.keys(scoreboard).forEach(participant => {
+          scoreArray.push({
+            name: participant,
+            score: scoreboard[participant]
+          });
+        });
+
+        scoreArray
+          .sort((a, b) => b.score - a.score)
+          .forEach(({ name, score }) => {
+            const li = document.createElement("li");
+            li.innerHTML = `${name}: ${score}p`;
+            document.getElementById("midiQuizScoreboard").appendChild(li);
+          });
+      }
+
+      socket.on("refresh midiQuiz scoreboard", refreshMidiQuizScoreboard);
 
       socket.on("chat message", function(message) {
         console.log("chat message", message);
