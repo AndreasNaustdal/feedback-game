@@ -81,6 +81,19 @@
     </section>
 
     <section class="py-4">
+      <h2 class="text-lg font-bold">
+        Bad translation in chat: <span id="badTranslateChat"></span>
+      </h2>
+      <button
+        type="button"
+        class="py-2 px-4 bg-blue-800 text-white"
+        onclick="toggleBadTranslateChat()"
+      >
+        Toggle bad translation
+      </button>
+    </section>
+
+    <section class="py-4">
       <h2 class="text-lg font-bold">Gravity: <span id="gravity"></span></h2>
       <button
         type="button"
@@ -168,6 +181,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
+
+      function toggleBadTranslateChat() {
+        socket.emit("toggle badTranslateChat");
+      }
 
       function toggleGravity() {
         socket.emit("toggle gravity");
@@ -258,6 +275,7 @@
         socket.emit("get character x", socket.id);
         socket.emit("get character y", socket.id);
         socket.emit("get current song", socket.id);
+        socket.emit("get badTranslateChat", socket.id);
       });
 
       socket.on("refresh suggestions", refreshSuggestions);
@@ -368,6 +386,13 @@
         li.innerHTML = message;
         document.getElementById("messages").appendChild(li);
       });
+
+      function getBadTranslateChat(badTranslateChat) {
+        document.getElementById(
+          "badTranslateChat"
+        ).innerHTML = badTranslateChat;
+      }
+      socket.on("refresh badTranslateChat", getBadTranslateChat);
     </script>
   </body>
 </html>

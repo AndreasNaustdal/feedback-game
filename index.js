@@ -5,6 +5,7 @@ var http = require("http").createServer(app);
 var io = require("socket.io")(http);
 const { Client } = require("pg");
 const schedule = require("node-schedule");
+const translate = require("@vitalets/google-translate-api");
 
 function createConnection() {
   console.log("isProdDB:", isProdDB(process.env.DATABASE_URL));
@@ -107,6 +108,7 @@ async function loadSuggestions({ items }) {
 }
 
 const suggestionEvents = require("./suggestions.js");
+const badTranslateChatEvents = require("./badTranslateChat.js");
 const gravityEvents = require("./gravity.js");
 const characterEvents = require("./character.js");
 const midiQuizEvents = require("./midiQuiz.js");
@@ -145,6 +147,9 @@ const midiQuiz = {
       "Magician's birthday"
     ]
   }
+};
+const badTranslateChat = {
+  activated: false
 };
 
 app.get("/", (req, res) => {
@@ -199,10 +204,46 @@ io.on("connection", socket => {
 
   socket.on("chat message", ({ username, message }) => {
     console.log("message: " + message);
+    if (badTranslateChat.activated) {
+      translate(message, { to: "es" })
+        .then(res => {
+          const originalLanguage = res.from.language.iso;
+          translate(res.text, { to: "de" })
+            .then(res2 => {
+              translate(res2.text, { to: originalLanguage })
+                .then(res3 => {
+                  io.emit("chat message", username + ": " + res3.text);
+                })
+                .catch(err => {
+                  console.error(err);
+                  io.emit(
+                    "chat message",
+                    username + ": " + message + " (not translated)"
+                  );
+                });
+            })
+            .catch(err => {
+              console.error(err);
+              io.emit(
+                "chat message",
+                username + ": " + message + " (not translated)"
+              );
+            });
+        })
+        .catch(err => {
+          console.error(err);
+          io.emit(
+            "chat message",
+            username + ": " + message + " (not translated)"
+          );
+        });
+      return;
+    }
     io.emit("chat message", username + ": " + message);
   });
 
   suggestionEvents({ socket, io, suggestions });
+  badTranslateChatEvents({ socket, io, badTranslateChat });
   gravityEvents({ socket, io, physics });
   characterEvents({ socket, io, character });
   midiQuizEvents({ socket, io, midiQuiz });
