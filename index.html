@@ -237,6 +237,7 @@
         suggestions.forEach((suggestion, i) => {
           const li = document.createElement("li");
           const button = document.createElement("button");
+          button.classList.add("text-left");
           button.innerHTML = `${suggestion.suggestion} (${suggestion.score})`;
           button.onclick = function(event) {
             console.log("vote for suggestion", {
