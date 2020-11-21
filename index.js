@@ -205,7 +205,7 @@ io.on("connection", socket => {
   socket.on("chat message", ({ username, message }) => {
     console.log("message: " + message);
     if (badTranslateChat.activated) {
-      translate(message, { to: "es" })
+      translate(message, { to: "pt" })
         .then(res => {
           const originalLanguage = res.from.language.iso;
           translate(res.text, { to: "de" })
