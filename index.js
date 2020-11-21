@@ -204,11 +204,27 @@ io.on("connection", socket => {
 
   socket.on("chat message", ({ username, message }) => {
     console.log("message: " + message);
+    const languages = [
+      "es",
+      "pt",
+      "de",
+      "it",
+      "zh",
+      "ja",
+      "fr",
+      "fi",
+      "hi",
+      "ru",
+      "pa"
+    ];
+    const lang1 = languages[Math.floor(Math.random() * languages.length)];
+    const lang2 = languages[Math.floor(Math.random() * languages.length)];
+    console.log(lang1, lang2);
     if (badTranslateChat.activated) {
-      translate(message, { to: "pt" })
+      translate(message, { to: lang1 })
         .then(res => {
           const originalLanguage = res.from.language.iso;
-          translate(res.text, { to: "de" })
+          translate(res.text, { to: lang2 })
             .then(res2 => {
               translate(res2.text, { to: originalLanguage })
                 .then(res3 => {
